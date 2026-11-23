@@ -7,7 +7,7 @@ namespace SupplierApp
     {
         private readonly AppDatabase database;
         private readonly UserAccount currentUser;
-        public CatalogForm() { InitializeComponent(); }
+        public CatalogForm() { InitializeComponent(); Theme.Apply(this); }
         public CatalogForm(AppDatabase database, UserAccount user) : this()
         {
             this.database = database;

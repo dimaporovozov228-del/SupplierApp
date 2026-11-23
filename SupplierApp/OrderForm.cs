@@ -9,7 +9,7 @@ namespace SupplierApp
         private readonly AppDatabase database;
         private readonly UserAccount currentUser;
         private readonly Product product;
-        public OrderForm() { InitializeComponent(); }
+        public OrderForm() { InitializeComponent(); Theme.Apply(this); }
         public OrderForm(AppDatabase database, UserAccount user, Product product) : this()
         {
             this.database = database;

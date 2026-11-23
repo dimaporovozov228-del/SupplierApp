@@ -7,7 +7,7 @@ namespace SupplierApp
     {
         private readonly AppDatabase database;
         public string RegisteredUserName { get; private set; }
-        public RegisterForm() { InitializeComponent(); }
+        public RegisterForm() { InitializeComponent(); Theme.Apply(this); }
         public RegisterForm(AppDatabase database) : this() { this.database = database; }
 
         private void btnCreate_Click(object sender, EventArgs e)

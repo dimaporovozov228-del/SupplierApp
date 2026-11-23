@@ -6,7 +6,7 @@ namespace SupplierApp
     public partial class LoginForm : Form
     {
         private readonly AppDatabase database;
-        public LoginForm() { InitializeComponent(); }
+        public LoginForm() { InitializeComponent(); Theme.Apply(this); }
         public LoginForm(AppDatabase database) : this() { this.database = database; }
 
         private void btnLogin_Click(object sender, EventArgs e)
