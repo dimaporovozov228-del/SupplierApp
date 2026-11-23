@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{8F7B03B6-5A15-4D8B-9EAF-66A6E5F4B4A1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SupplierApp</RootNamespace>
+    <AssemblyName>SupplierApp</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <StartupObject>SupplierApp.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+
+
+
+
+
+    <Compile Include="LoginForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="LoginForm.Designer.cs"><DependentUpon>LoginForm.cs</DependentUpon></Compile>
+    <Compile Include="CatalogForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="CatalogForm.Designer.cs"><DependentUpon>CatalogForm.cs</DependentUpon></Compile>
+    <Compile Include="OrderForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="OrderForm.Designer.cs"><DependentUpon>OrderForm.cs</DependentUpon></Compile>
+    <Compile Include="RegisterForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="RegisterForm.Designer.cs"><DependentUpon>RegisterForm.cs</DependentUpon></Compile>
+    <Compile Include="OrdersForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="OrdersForm.Designer.cs"><DependentUpon>OrdersForm.cs</DependentUpon></Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
