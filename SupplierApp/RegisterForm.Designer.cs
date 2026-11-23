@@ -5,7 +5,7 @@ namespace SupplierApp
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Label lblTitle, lblName, lblLogin, lblPassword, lblRepeat, lblHint;
         private System.Windows.Forms.TextBox txtName, txtLogin, txtPassword, txtRepeat;
-
+        private System.Windows.Forms.Button btnCreate, btnCancel;
 
         protected override void Dispose(bool disposing)
         {
@@ -25,6 +25,8 @@ namespace SupplierApp
             txtLogin = new System.Windows.Forms.TextBox();
             txtPassword = new System.Windows.Forms.TextBox();
             txtRepeat = new System.Windows.Forms.TextBox();
+            btnCreate = new System.Windows.Forms.Button();
+            btnCancel = new System.Windows.Forms.Button();
             SuspendLayout();
             lblTitle.AutoSize = true;
             lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular);
@@ -67,11 +69,23 @@ namespace SupplierApp
             lblHint.Location = new System.Drawing.Point(30, 255);
             lblHint.Size = new System.Drawing.Size(440, 55);
             lblHint.Text = "Логин: 3–50 латинских букв, цифр или символов _ . -\r\nПароль: 8–128 символов. Имя: 2–100 символов.";
+            btnCreate.Location = new System.Drawing.Point(170, 330);
+            btnCreate.Size = new System.Drawing.Size(140, 36);
+            btnCreate.Text = "Создать";
+            btnCreate.TabIndex = 4;
+            btnCreate.Click += new System.EventHandler(btnCreate_Click);
+            btnCancel.Location = new System.Drawing.Point(330, 330);
+            btnCancel.Size = new System.Drawing.Size(140, 36);
+            btnCancel.Text = "Отмена";
+            btnCancel.TabIndex = 5;
+            btnCancel.Click += new System.EventHandler(btnCancel_Click);
+            AcceptButton = btnCreate;
+            CancelButton = btnCancel;
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             Font = new System.Drawing.Font("Segoe UI", 9F);
             ClientSize = new System.Drawing.Size(505, 396);
-            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, lblName, txtName, lblLogin, txtLogin, lblPassword, txtPassword, lblRepeat, txtRepeat, lblHint, });
+            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, lblName, txtName, lblLogin, txtLogin, lblPassword, txtPassword, lblRepeat, txtRepeat, lblHint, btnCreate, btnCancel });
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

@@ -40,11 +40,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-
-
-
-
-
+    <Compile Include="Models.cs" />
+    <Compile Include="PasswordHasher.cs" />
+    <Compile Include="InputValidation.cs" />
+    <Compile Include="AppDatabase.cs" />
+    <Compile Include="UiErrors.cs" />
     <Compile Include="LoginForm.cs"><SubType>Form</SubType></Compile>
     <Compile Include="LoginForm.Designer.cs"><DependentUpon>LoginForm.cs</DependentUpon></Compile>
     <Compile Include="CatalogForm.cs"><SubType>Form</SubType></Compile>
@@ -59,6 +59,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Database\SupplierApp.mdb" />
+    <None Include="Database\schema.sql" />
+    <None Include="Database\seed_products.sql" />
+    <None Include="Database\CreateDatabase.ps1" />
+    <None Include="Database\CreateDatabase.cmd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- Только первая сборка копирует эталон. Rebuild не стирает заказы и пользователей. -->
+  <Target Name="CopyInitialDatabase" AfterTargets="Build">
+    <MakeDir Directories="$(OutDir)Database" />
+    <Copy SourceFiles="Database\SupplierApp.mdb" DestinationFiles="$(OutDir)Database\SupplierApp.mdb"
+          Condition="!Exists('$(OutDir)Database\SupplierApp.mdb')" />
+  </Target>
 </Project>

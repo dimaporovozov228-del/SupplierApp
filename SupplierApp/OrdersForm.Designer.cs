@@ -6,7 +6,7 @@ namespace SupplierApp
         private System.Windows.Forms.Label lblTitle, lblCount, lblDatabase;
         private System.Windows.Forms.TextBox txtDatabasePath;
         private System.Windows.Forms.DataGridView gridOrders;
-
+        private System.Windows.Forms.Button btnRefresh, btnClose;
 
         protected override void Dispose(bool disposing)
         {
@@ -21,6 +21,8 @@ namespace SupplierApp
             lblDatabase = new System.Windows.Forms.Label();
             txtDatabasePath = new System.Windows.Forms.TextBox();
             gridOrders = new System.Windows.Forms.DataGridView();
+            btnRefresh = new System.Windows.Forms.Button();
+            btnClose = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)gridOrders).BeginInit();
             SuspendLayout();
             lblTitle.Location = new System.Drawing.Point(22, 20);
@@ -56,14 +58,28 @@ namespace SupplierApp
             txtDatabasePath.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtDatabasePath.ReadOnly = true;
             txtDatabasePath.TabIndex = 3;
+            btnRefresh.Location = new System.Drawing.Point(690, 495);
+            btnRefresh.Size = new System.Drawing.Size(130, 35);
+            btnRefresh.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnRefresh.Text = "Обновить";
+            btnRefresh.TabIndex = 1;
+            btnRefresh.Click += new System.EventHandler(btnRefresh_Click);
+            btnClose.Location = new System.Drawing.Point(845, 495);
+            btnClose.Size = new System.Drawing.Size(130, 35);
+            btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnClose.Text = "Закрыть";
+            btnClose.TabIndex = 2;
+            btnClose.Click += new System.EventHandler(btnClose_Click);
+            CancelButton = btnClose;
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             Font = new System.Drawing.Font("Segoe UI", 9F);
             ClientSize = new System.Drawing.Size(1000, 552);
             MinimumSize = new System.Drawing.Size(900, 500);
-            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, gridOrders, lblCount, lblDatabase, txtDatabasePath, });
+            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, gridOrders, lblCount, lblDatabase, txtDatabasePath, btnRefresh, btnClose });
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Text = "SupplierApp — история заказов";
+            Shown += new System.EventHandler(OrdersForm_Shown);
             ((System.ComponentModel.ISupportInitialize)gridOrders).EndInit();
             ResumeLayout(false);
             PerformLayout();

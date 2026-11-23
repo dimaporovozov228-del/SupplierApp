@@ -5,7 +5,7 @@ namespace SupplierApp
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Label lblTitle, lblLogin, lblPassword, lblDemo;
         private System.Windows.Forms.TextBox txtLogin, txtPassword;
-
+        private System.Windows.Forms.Button btnLogin, btnRegister, btnExit;
 
         protected override void Dispose(bool disposing)
         {
@@ -21,6 +21,9 @@ namespace SupplierApp
             lblDemo = new System.Windows.Forms.Label();
             txtLogin = new System.Windows.Forms.TextBox();
             txtPassword = new System.Windows.Forms.TextBox();
+            btnLogin = new System.Windows.Forms.Button();
+            btnRegister = new System.Windows.Forms.Button();
+            btnExit = new System.Windows.Forms.Button();
             SuspendLayout();
             lblTitle.AutoSize = true;
             lblTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular);
@@ -43,14 +46,31 @@ namespace SupplierApp
             txtPassword.MaxLength = 128;
             txtPassword.UseSystemPasswordChar = true;
             txtPassword.TabIndex = 1;
+            btnLogin.Location = new System.Drawing.Point(40, 186);
+            btnLogin.Size = new System.Drawing.Size(115, 35);
+            btnLogin.Text = "Войти";
+            btnLogin.TabIndex = 2;
+            btnLogin.Click += new System.EventHandler(btnLogin_Click);
+            btnRegister.Location = new System.Drawing.Point(170, 186);
+            btnRegister.Size = new System.Drawing.Size(130, 35);
+            btnRegister.Text = "Регистрация";
+            btnRegister.TabIndex = 3;
+            btnRegister.Click += new System.EventHandler(btnRegister_Click);
+            btnExit.Location = new System.Drawing.Point(315, 186);
+            btnExit.Size = new System.Drawing.Size(115, 35);
+            btnExit.Text = "Выход";
+            btnExit.TabIndex = 4;
+            btnExit.Click += new System.EventHandler(btnExit_Click);
             lblDemo.Location = new System.Drawing.Point(40, 244);
             lblDemo.Size = new System.Drawing.Size(400, 50);
             lblDemo.Text = "Учебная учетная запись\r\nЛогин: student    Пароль: Student123!";
+            AcceptButton = btnLogin;
+            CancelButton = btnExit;
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             Font = new System.Drawing.Font("Segoe UI", 9F);
             ClientSize = new System.Drawing.Size(475, 310);
-            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, lblLogin, txtLogin, lblPassword, txtPassword,  lblDemo });
+            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, lblLogin, txtLogin, lblPassword, txtPassword, btnLogin, btnRegister, btnExit, lblDemo });
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

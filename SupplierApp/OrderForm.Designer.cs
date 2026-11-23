@@ -6,7 +6,7 @@ namespace SupplierApp
         private System.Windows.Forms.Label lblTitle, lblProduct, lblQuantity, lblAddress, lblPrice, lblTotal;
         private System.Windows.Forms.TextBox txtProduct, txtAddress;
         private System.Windows.Forms.NumericUpDown numQuantity;
-
+        private System.Windows.Forms.Button btnSend, btnBack;
 
         protected override void Dispose(bool disposing)
         {
@@ -25,6 +25,8 @@ namespace SupplierApp
             txtProduct = new System.Windows.Forms.TextBox();
             txtAddress = new System.Windows.Forms.TextBox();
             numQuantity = new System.Windows.Forms.NumericUpDown();
+            btnSend = new System.Windows.Forms.Button();
+            btnBack = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)numQuantity).BeginInit();
             SuspendLayout();
             lblTitle.AutoSize = true;
@@ -54,6 +56,7 @@ namespace SupplierApp
             numQuantity.Value = 1M;
             numQuantity.Increment = 0.5M;
             numQuantity.TabIndex = 0;
+            numQuantity.ValueChanged += new System.EventHandler(numQuantity_ValueChanged);
             lblAddress.AutoSize = true;
             lblAddress.Location = new System.Drawing.Point(30, 204);
             lblAddress.Text = "Адрес доставки";
@@ -68,11 +71,23 @@ namespace SupplierApp
             lblTotal.Size = new System.Drawing.Size(335, 32);
             lblTotal.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular);
             lblTotal.Text = "Итого";
+            btnSend.Location = new System.Drawing.Point(160, 339);
+            btnSend.Size = new System.Drawing.Size(155, 36);
+            btnSend.Text = "Сохранить заказ";
+            btnSend.TabIndex = 2;
+            btnSend.Click += new System.EventHandler(btnSend_Click);
+            btnBack.Location = new System.Drawing.Point(340, 339);
+            btnBack.Size = new System.Drawing.Size(155, 36);
+            btnBack.Text = "Назад";
+            btnBack.TabIndex = 3;
+            btnBack.Click += new System.EventHandler(btnBack_Click);
+            AcceptButton = btnSend;
+            CancelButton = btnBack;
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             Font = new System.Drawing.Font("Segoe UI", 9F);
             ClientSize = new System.Drawing.Size(530, 405);
-            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, lblProduct, txtProduct, lblPrice, lblQuantity, numQuantity, lblAddress, txtAddress, lblTotal, });
+            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, lblProduct, txtProduct, lblPrice, lblQuantity, numQuantity, lblAddress, txtAddress, lblTotal, btnSend, btnBack });
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
