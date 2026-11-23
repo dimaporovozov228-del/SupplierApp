@@ -24,7 +24,7 @@ namespace SupplierApp
         public static string Order(decimal quantity, string address)
         {
             if (quantity <= 0 || quantity > 10000 || decimal.Round(quantity, 3) != quantity)
-                throw new ArgumentException("Количество: больше 0 и не более 10000 кг, до трех знаков после запятой.");
+                throw new ArgumentException("Количество: больше 0 и не более 10000 единиц, до трех знаков после запятой.");
             string value = (address ?? string.Empty).Trim();
             if (value.Length < 5 || value.Length > 255)
                 throw new ArgumentException("Адрес должен содержать от 5 до 255 символов.");

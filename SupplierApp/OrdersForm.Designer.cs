@@ -1,86 +1,62 @@
+﻿using System.Drawing;
+using System.Windows.Forms;
+
 namespace SupplierApp
 {
     partial class OrdersForm
     {
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Label lblTitle, lblCount, lblDatabase;
-        private System.Windows.Forms.TextBox txtDatabasePath;
-        private System.Windows.Forms.DataGridView gridOrders;
-        private System.Windows.Forms.Button btnRefresh, btnClose;
-
+        private Label lblOwner, lblCount;
+        private ComboBox cmbStatus;
+        private DataGridView gridOrders;
+        private Button btnDetails, btnCancelOrder, btnExport;
         protected override void Dispose(bool disposing)
         {
             if (disposing && components != null) components.Dispose();
             base.Dispose(disposing);
         }
-
         private void InitializeComponent()
         {
-            lblTitle = new System.Windows.Forms.Label();
-            lblCount = new System.Windows.Forms.Label();
-            lblDatabase = new System.Windows.Forms.Label();
-            txtDatabasePath = new System.Windows.Forms.TextBox();
-            gridOrders = new System.Windows.Forms.DataGridView();
-            btnRefresh = new System.Windows.Forms.Button();
-            btnClose = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)gridOrders).BeginInit();
             SuspendLayout();
-            lblTitle.Location = new System.Drawing.Point(22, 20);
-            lblTitle.Size = new System.Drawing.Size(940, 35);
-            lblTitle.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular);
-            lblTitle.AutoEllipsis = true;
-            lblTitle.Text = "Мои заказы";
-            gridOrders.Name = "gridOrders";
-            gridOrders.Location = new System.Drawing.Point(25, 68);
-            gridOrders.Size = new System.Drawing.Size(950, 330);
-            gridOrders.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            gridOrders.ReadOnly = true;
-            gridOrders.AllowUserToAddRows = false;
-            gridOrders.AllowUserToDeleteRows = false;
-            gridOrders.MultiSelect = false;
-            gridOrders.RowHeadersVisible = false;
-            gridOrders.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            gridOrders.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            gridOrders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            gridOrders.BackgroundColor = System.Drawing.SystemColors.Window;
-            gridOrders.TabIndex = 0;
-            lblCount.Location = new System.Drawing.Point(25, 413);
-            lblCount.Size = new System.Drawing.Size(600, 25);
-            lblCount.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblCount.Text = "Заказы";
-            lblDatabase.Location = new System.Drawing.Point(25, 453);
-            lblDatabase.Size = new System.Drawing.Size(95, 23);
-            lblDatabase.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblDatabase.Text = "Файл базы";
-            txtDatabasePath.Location = new System.Drawing.Point(125, 450);
-            txtDatabasePath.Size = new System.Drawing.Size(850, 23);
-            txtDatabasePath.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtDatabasePath.ReadOnly = true;
-            txtDatabasePath.TabIndex = 3;
-            btnRefresh.Location = new System.Drawing.Point(690, 495);
-            btnRefresh.Size = new System.Drawing.Size(130, 35);
-            btnRefresh.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnRefresh.Text = "Обновить";
-            btnRefresh.TabIndex = 1;
-            btnRefresh.Click += new System.EventHandler(btnRefresh_Click);
-            btnClose.Location = new System.Drawing.Point(845, 495);
-            btnClose.Size = new System.Drawing.Size(130, 35);
-            btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnClose.Text = "Закрыть";
-            btnClose.TabIndex = 2;
-            btnClose.Click += new System.EventHandler(btnClose_Click);
-            CancelButton = btnClose;
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            Font = new System.Drawing.Font("Segoe UI", 9F);
-            ClientSize = new System.Drawing.Size(1000, 552);
-            MinimumSize = new System.Drawing.Size(900, 500);
-            Controls.AddRange(new System.Windows.Forms.Control[] { lblTitle, gridOrders, lblCount, lblDatabase, txtDatabasePath, btnRefresh, btnClose });
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            Text = "SupplierApp — история заказов";
-            Shown += new System.EventHandler(OrdersForm_Shown);
-            ((System.ComponentModel.ISupportInitialize)gridOrders).EndInit();
+            Theme.Setup(this, "мои заказы", 1100, 660);
+            Controls.Add(Theme.Header("Мои заказы", "Все покупки в одном месте. Откройте карточку, сохраните список или отмените новый заказ.", 1100));
+            lblOwner = Theme.Label("История покупок", 26, 128, 600, 30, 11F);
+            cmbStatus = new ComboBox { Name = "cmbStatus", AccessibleName = "Фильтр по статусу", Location = new Point(768, 132), Size = new Size(180, 26), DropDownStyle = ComboBoxStyle.DropDownList, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            cmbStatus.Items.AddRange(new object[] { "Все статусы", "Новые", "Отменённые" });
+            cmbStatus.SelectedIndex = 0;
+            cmbStatus.SelectedIndexChanged += (s, e) => ApplyFilter();
+            var refresh = Theme.Button("Обновить", 960, 126, 114, btnRefresh_Click, true);
+            refresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            gridOrders = Theme.Grid("gridOrders", 26, 181, 1048, 316);
+            Theme.Column(gridOrders, "OrderId", "№", 7);
+            Theme.Column(gridOrders, "ProductName", "Товар", 20);
+            Theme.Column(gridOrders, "Quantity", "Кол-во", 12, "0.###");
+            Theme.Column(gridOrders, "Unit", "Ед.", 7);
+            Theme.Column(gridOrders, "UnitPrice", "Цена, ₽", 13, "N2");
+            Theme.Column(gridOrders, "TotalAmount", "Сумма, ₽", 15, "N2");
+            Theme.Column(gridOrders, "CreatedAt", "Дата", 21, "dd.MM.yyyy HH:mm");
+            Theme.Column(gridOrders, "OrderStatus", "Статус", 14);
+            gridOrders.SelectionChanged += (s, e) => SelectionChanged();
+            gridOrders.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) Details(s, e); };
+            gridOrders.CellFormatting += (s, e) =>
+            {
+                if (e.ColumnIndex == gridOrders.Columns["OrderStatus"].Index && e.Value != null)
+                    e.CellStyle.ForeColor = e.Value.ToString() == "Новый" ? Theme.Accent : Theme.Muted;
+            };
+            lblCount = Theme.Label("Загрузка…", 26, 510, 1048, 32, 11F);
+            lblCount.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            btnDetails = Theme.Button("Открыть заказ", 26, 563, 174, Details);
+            btnCancelOrder = Theme.Button("Отменить заказ", 216, 563, 180, CancelOrder, true);
+            btnExport = Theme.Button("Сохранить CSV", 412, 563, 180, Export, true);
+            var close = Theme.Button("В каталог", 900, 563, 174, btnClose_Click, true);
+            btnDetails.Anchor = btnCancelOrder.Anchor = btnExport.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            close.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            var hint = Theme.Label("Отменить можно только заказ со статусом «Новый». Отменённые заказы остаются в истории.", 26, 615, 1048, 25);
+            hint.ForeColor = Theme.Muted;
+            hint.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            Controls.AddRange(new Control[] { lblOwner, cmbStatus, refresh, gridOrders, lblCount, btnDetails, btnCancelOrder, btnExport, close, hint });
+            CancelButton = close;
+            Shown += OrdersForm_Shown;
             ResumeLayout(false);
             PerformLayout();
         }

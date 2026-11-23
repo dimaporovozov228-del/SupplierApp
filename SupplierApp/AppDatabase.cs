@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -105,7 +105,7 @@ namespace SupplierApp
             catch (OleDbException exception)
             {
                 foreach (OleDbError error in exception.Errors)
-                    if (error.NativeError == 3022)
+                    if (error.NativeError == 3022 || error.SQLState == "3022")
                         throw new ArgumentException("Этот логин уже занят. Выберите другой.", exception);
                 throw;
             }
@@ -123,46 +123,81 @@ namespace SupplierApp
             return products;
         }
 
-        public int CreateOrder(UserAccount user, Product product, decimal quantity, string address)
+        private int InsertOrder(OleDbConnection connection, OleDbTransaction transaction, UserAccount user, Product product, decimal quantity, string deliveryAddress)
         {
             if (user == null) throw new ArgumentNullException("user");
             if (product == null) throw new ArgumentNullException("product");
-            string deliveryAddress = InputValidation.Order(quantity, address);
+            using (var check = new OleDbCommand(
+                "SELECT [UnitPrice] FROM [Products] WHERE [ProductId] = ? AND [IsActive] = True", connection, transaction))
+            {
+                check.Parameters.Add("pProductId", OleDbType.Integer).Value = product.ProductId;
+                object currentPrice = check.ExecuteScalar();
+                if (currentPrice == null || currentPrice == DBNull.Value)
+                    throw new ArgumentException("Товар больше не доступен. Обновите каталог.");
+                if (Convert.ToDecimal(currentPrice) <= 0)
+                    throw new ArgumentException("В каталоге указана некорректная цена. Исправьте ее в базе данных.");
+                if (Convert.ToDecimal(currentPrice) != product.UnitPrice)
+                    throw new ArgumentException("Цена товара изменилась. Удалите эту позицию из корзины, обновите каталог и добавьте товар заново.");
+            }
+            using (var command = new OleDbCommand(
+                "INSERT INTO [Orders] ([UserId], [ProductId], [Quantity], [UnitPrice], [DeliveryAddress], [CreatedAt], [OrderStatus]) VALUES (?, ?, ?, ?, ?, ?, ?)", connection, transaction))
+            {
+                command.Parameters.Add("pUserId", OleDbType.Integer).Value = user.UserId;
+                command.Parameters.Add("pProductId", OleDbType.Integer).Value = product.ProductId;
+                // Jet 4.0 не принимает дробный Decimal-параметр для этого поля.
+                // Currency точно хранит 4 знака; наша валидация разрешает не более 3.
+                var amount = command.Parameters.Add("pQuantity", OleDbType.Currency);
+                amount.Value = quantity;
+                command.Parameters.Add("pUnitPrice", OleDbType.Currency).Value = product.UnitPrice;
+                command.Parameters.Add("pAddress", OleDbType.VarWChar, 255).Value = deliveryAddress;
+                command.Parameters.Add("pCreatedAt", OleDbType.Date).Value = DateTime.Now;
+                command.Parameters.Add("pStatus", OleDbType.VarWChar, 20).Value = "Новый";
+                if (command.ExecuteNonQuery() != 1) throw new DataException("Заказ не сохранен.");
+            }
+            int orderId;
+            using (var identity = new OleDbCommand("SELECT @@IDENTITY", connection, transaction))
+                orderId = Convert.ToInt32(identity.ExecuteScalar());
+            return orderId;
+        }
+
+        public int CreateOrder(UserAccount user, Product product, decimal quantity, string address)
+        {
+            return CreateOrders(user, new[] { new CartItem(product, quantity) }, address)[0];
+        }
+
+        // Вся корзина записывается одной транзакцией: ошибка любой позиции отменяет все записи.
+        public List<int> CreateOrders(UserAccount user, IList<CartItem> items, string address)
+        {
+            if (user == null) throw new ArgumentNullException("user");
+            if (items == null || items.Count == 0) throw new ArgumentException("Корзина пуста.");
+            string deliveryAddress = InputValidation.Order(1, address);
+            foreach (var item in items)
+            {
+                if (item == null) throw new ArgumentException("Некорректная позиция корзины.");
+                InputValidation.Order(item.Quantity, deliveryAddress);
+            }
             using (var connection = OpenConnection())
             using (var transaction = connection.BeginTransaction())
             {
-                using (var check = new OleDbCommand(
-                    "SELECT [UnitPrice] FROM [Products] WHERE [ProductId] = ? AND [IsActive] = True", connection, transaction))
-                {
-                    check.Parameters.Add("pProductId", OleDbType.Integer).Value = product.ProductId;
-                    object currentPrice = check.ExecuteScalar();
-                    if (currentPrice == null || currentPrice == DBNull.Value)
-                        throw new ArgumentException("Товар больше не доступен. Обновите каталог.");
-                    if (Convert.ToDecimal(currentPrice) <= 0)
-                        throw new ArgumentException("В каталоге указана некорректная цена. Исправьте ее в базе данных.");
-                    if (Convert.ToDecimal(currentPrice) != product.UnitPrice)
-                        throw new ArgumentException("Цена товара изменилась. Закройте заказ и обновите каталог.");
-                }
-                using (var command = new OleDbCommand(
-                    "INSERT INTO [Orders] ([UserId], [ProductId], [Quantity], [UnitPrice], [DeliveryAddress], [CreatedAt], [OrderStatus]) VALUES (?, ?, ?, ?, ?, ?, ?)", connection, transaction))
-                {
-                    command.Parameters.Add("pUserId", OleDbType.Integer).Value = user.UserId;
-                    command.Parameters.Add("pProductId", OleDbType.Integer).Value = product.ProductId;
-                    var amount = command.Parameters.Add("pQuantity", OleDbType.Decimal);
-                    amount.Precision = 18;
-                    amount.Scale = 3;
-                    amount.Value = quantity;
-                    command.Parameters.Add("pUnitPrice", OleDbType.Currency).Value = product.UnitPrice;
-                    command.Parameters.Add("pAddress", OleDbType.VarWChar, 255).Value = deliveryAddress;
-                    command.Parameters.Add("pCreatedAt", OleDbType.Date).Value = DateTime.Now;
-                    command.Parameters.Add("pStatus", OleDbType.VarWChar, 20).Value = "Новый";
-                    if (command.ExecuteNonQuery() != 1) throw new DataException("Заказ не сохранен.");
-                }
-                int orderId;
-                using (var identity = new OleDbCommand("SELECT @@IDENTITY", connection, transaction))
-                    orderId = Convert.ToInt32(identity.ExecuteScalar());
+                var ids = new List<int>();
+                foreach (var item in items)
+                    ids.Add(InsertOrder(connection, transaction, user, item.Product, item.Quantity, deliveryAddress));
                 transaction.Commit();
-                return orderId;
+                return ids;
+            }
+        }
+
+        public bool CancelOrder(int userId, int orderId)
+        {
+            using (var connection = OpenConnection())
+            using (var command = new OleDbCommand(
+                "UPDATE [Orders] SET [OrderStatus] = ? WHERE [OrderId] = ? AND [UserId] = ? AND [OrderStatus] = ?", connection))
+            {
+                command.Parameters.Add("pCancelled", OleDbType.VarWChar, 20).Value = "Отменён";
+                command.Parameters.Add("pOrderId", OleDbType.Integer).Value = orderId;
+                command.Parameters.Add("pUserId", OleDbType.Integer).Value = userId;
+                command.Parameters.Add("pNew", OleDbType.VarWChar, 20).Value = "Новый";
+                return command.ExecuteNonQuery() == 1;
             }
         }
 
@@ -170,7 +205,7 @@ namespace SupplierApp
         {
             using (var connection = OpenConnection())
             using (var command = new OleDbCommand(
-                "SELECT o.[OrderId], p.[ProductName], o.[Quantity], o.[UnitPrice], " +
+                "SELECT o.[OrderId], p.[ProductName], p.[Unit], o.[Quantity], o.[UnitPrice], " +
                 "Round(o.[Quantity] * o.[UnitPrice], 2) AS [TotalAmount], o.[DeliveryAddress], o.[CreatedAt], o.[OrderStatus] " +
                 "FROM [Orders] AS o INNER JOIN [Products] AS p ON o.[ProductId] = p.[ProductId] " +
                 "WHERE o.[UserId] = ? ORDER BY o.[OrderId] DESC", connection))

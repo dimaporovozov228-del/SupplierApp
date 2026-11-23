@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SupplierApp
@@ -9,7 +10,7 @@ namespace SupplierApp
         public LoginForm() { InitializeComponent(); Theme.Apply(this); }
         public LoginForm(AppDatabase database) : this() { this.database = database; }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private async void btnLogin_Click(object sender, EventArgs e)
         {
             if (database == null) return;
             if (string.IsNullOrWhiteSpace(txtLogin.Text) || string.IsNullOrEmpty(txtPassword.Text))
@@ -18,10 +19,12 @@ namespace SupplierApp
                 return;
             }
             UserAccount account;
+            string login = txtLogin.Text, password = txtPassword.Text;
             SetBusy(true);
-            try { account = database.Authenticate(txtLogin.Text, txtPassword.Text); }
-            catch (Exception exception) { UiErrors.Show(this, exception); return; }
-            finally { SetBusy(false); }
+            try { account = await Task.Run(() => database.Authenticate(login, password)); }
+            catch (Exception exception) { if (!IsDisposed) UiErrors.Show(this, exception); return; }
+            finally { if (!IsDisposed) SetBusy(false); }
+            if (IsDisposed) return;
             if (account == null)
             {
                 MessageBox.Show(this, "Неверный логин или пароль.", "Вход", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -43,6 +46,7 @@ namespace SupplierApp
             UseWaitCursor = value;
             btnLogin.Enabled = !value;
             btnRegister.Enabled = !value;
+            txtLogin.Enabled = txtPassword.Enabled = !value;
         }
 
         private void btnRegister_Click(object sender, EventArgs e)

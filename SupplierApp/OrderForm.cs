@@ -9,7 +9,13 @@ namespace SupplierApp
         private readonly AppDatabase database;
         private readonly UserAccount currentUser;
         private readonly Product product;
-        public OrderForm() { InitializeComponent(); Theme.Apply(this); }
+        public OrderForm()
+        {
+            InitializeComponent();
+            Theme.AddHeader(this, lblTitle, "Оформление заказа", "Проверьте количество и укажите адрес доставки.");
+            btnBack.Tag = "secondary";
+            Theme.Apply(this);
+        }
         public OrderForm(AppDatabase database, UserAccount user, Product product) : this()
         {
             this.database = database;
